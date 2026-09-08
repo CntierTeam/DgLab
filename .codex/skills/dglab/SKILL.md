@@ -15,6 +15,8 @@ metadata:
 
 Rust BLE controller for DG-LAB Coyote **V2 + V3**. Repo root is the Cargo package `dglab`.
 
+**仅学习用** — educational / research only; no warranty; users accept their own risk and must follow local law and device safety.
+
 ## Hard rules
 
 1. **Default argv → TUI**; **`--headless` → stdin/stdout line protocol**; **`--mock` → no adapter**.

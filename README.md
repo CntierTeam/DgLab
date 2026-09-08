@@ -1,5 +1,7 @@
 # DgLab — Coyote V2/V3 BLE CLI/TUI
 
+> **仅学习用。** 本项目仅供协议学习与个人研究，不提供任何保证；使用风险自负，请遵守当地法律与设备安全规范。
+
 纯 Rust 实现的郊狼 **V2 / V3** 蓝牙控制端：默认 **ratatui TUI**，另提供与 [MossCG/DGLAB-BT](https://github.com/MossCG/DGLAB-BT) 兼容的 **`--headless`** 行协议。无硬件时可用 **`--mock`**。
 
 仓库：[CntierTeam/DgLab](https://github.com/CntierTeam/DgLab)

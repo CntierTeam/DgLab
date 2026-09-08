@@ -88,7 +88,7 @@ fn draw_header(frame: &mut Frame, area: Rect, state: &AppState) {
     let emergency = if state.emergency { " [E-STOP]" } else { "" };
     let text = Paragraph::new(Line::from(vec![
         Span::styled(
-            " DgLab ",
+            " DgLab · 仅学习用 ",
             Style::default()
                 .fg(Color::Black)
                 .bg(Color::Cyan)

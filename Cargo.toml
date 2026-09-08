@@ -3,7 +3,7 @@ name = "dglab"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "DG-LAB Coyote V2/V3 BLE CLI/TUI controller"
+description = "DG-LAB Coyote V2/V3 BLE CLI/TUI controller (仅学习用)"
 authors = ["DgLab contributors"]
 readme = "README.md"
 

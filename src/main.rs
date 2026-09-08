@@ -13,7 +13,10 @@ use clap::Parser;
 use std::io::IsTerminal;
 
 #[derive(Parser, Debug)]
-#[command(name = "dglab", about = "DG-LAB Coyote V2/V3 BLE controller (TUI + headless)")]
+#[command(
+    name = "dglab",
+    about = "DG-LAB Coyote V2/V3 BLE controller (TUI + headless) — 仅学习用"
+)]
 struct Cli {
     /// Line-protocol mode compatible with DGLAB-BT (stdin/stdout).
     #[arg(long)]

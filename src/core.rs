@@ -106,7 +106,7 @@ pub async fn run_core<S: DeviceSession + 'static>(
     event_tx: mpsc::UnboundedSender<Event>,
 ) -> Result<()> {
     let _ = event_tx.send(Event::Msg(
-        "DGLAB蓝牙核心V0.1.0已启动！Rust/btleplug".into(),
+        "DGLAB蓝牙核心V0.1.0已启动！Rust/btleplug（仅学习用）".into(),
     ));
     let _ = event_tx.send(Event::Start);
 
