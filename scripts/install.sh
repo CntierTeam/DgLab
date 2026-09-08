@@ -75,21 +75,23 @@ need_cmd() {
   }
 }
 
+CURL_OPTS=(--fail --show-error --location --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20)
+
 http_get() {
   local url="$1" out="$2"
   if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-    curl -fsSL -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/octet-stream" "$url" -o "$out"
+    curl "${CURL_OPTS[@]}" -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/octet-stream" "$url" -o "$out"
   else
-    curl -fsSL -H "Accept: application/octet-stream" "$url" -o "$out"
+    curl "${CURL_OPTS[@]}" -H "Accept: application/octet-stream" "$url" -o "$out"
   fi
 }
 
 http_json() {
   local url="$1"
   if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-    curl -fsSL -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$url"
+    curl "${CURL_OPTS[@]}" -H "Authorization: Bearer ${GITHUB_TOKEN}" -H "Accept: application/vnd.github+json" "$url"
   else
-    curl -fsSL -H "Accept: application/vnd.github+json" "$url"
+    curl "${CURL_OPTS[@]}" -H "Accept: application/vnd.github+json" "$url"
   fi
 }
 
