@@ -1,0 +1,6 @@
+interface:
+  display_name: "DgLab Coyote"
+  short_description: "Coyote V2/V3 BLE CLI/TUI guide"
+  default_prompt: "Use $dglab to work on the DgLab Coyote controller (build, mock headless smoke, or protocol changes)."
+policy:
+  allow_implicit_invocation: true

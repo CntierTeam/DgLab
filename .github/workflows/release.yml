@@ -1,0 +1,137 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to create/publish (e.g. v0.1.0). Leave empty to build without tagging."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: macos-13
+            target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux BLE build deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config libdbus-1-dev libudev-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build release binary
+        run: cargo build --locked --release --target ${{ matrix.target }}
+
+      - name: Package binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN="target/${{ matrix.target }}/release/dglab"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then BIN="${BIN}.exe"; fi
+          STAGE="dglab-${{ matrix.target }}"
+          mkdir -p "dist/${STAGE}"
+          cp "${BIN}" "dist/${STAGE}/"
+          cp README.md LICENSE "dist/${STAGE}/"
+          tar -C dist -czf "dist/${STAGE}.tar.gz" "${STAGE}"
+          (cd dist && sha256sum "${STAGE}.tar.gz" > "${STAGE}.tar.gz.sha256")
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dglab-${{ matrix.target }}
+          path: |
+            dist/dglab-${{ matrix.target }}.tar.gz
+            dist/dglab-${{ matrix.target }}.tar.gz.sha256
+
+  skill:
+    name: package skill
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package Codex skill
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          tar -C .codex/skills -czf dist/dglab-skill.tar.gz dglab
+          (cd dist && sha256sum dglab-skill.tar.gz > dglab-skill.tar.gz.sha256)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dglab-skill
+          path: |
+            dist/dglab-skill.tar.gz
+            dist/dglab-skill.tar.gz.sha256
+
+  publish:
+    name: publish release
+    needs: [build, skill]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve tag
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            TAG="${GITHUB_REF_NAME}"
+          elif [[ -n "${{ inputs.tag }}" ]]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="v0.0.0-ci.${GITHUB_RUN_NUMBER}"
+            echo "warning: no tag input; using ephemeral ${TAG}" >&2
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Collect assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          find artifacts -type f \( -name '*.tar.gz' -o -name '*.sha256' \) -print -exec cp -v {} release-assets/ \;
+          cp scripts/install.sh release-assets/install.sh
+          ls -la release-assets
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: DgLab ${{ steps.meta.outputs.tag }}
+          generate_release_notes: true
+          files: release-assets/*
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
