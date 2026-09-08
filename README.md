@@ -14,6 +14,17 @@
 curl -fsSL https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.sh | bash
 ```
 
+Windows（PowerShell）：
+
+```powershell
+irm https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.ps1 | iex
+# 或指定版本 / 强制覆盖
+irm https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.ps1 | iex -Force
+# 更稳妥：
+iwr -useb https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.ps1 -OutFile install.ps1
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Force
+```
+
 默认安装：
 
 - 二进制 → `~/.local/bin/dglab`
@@ -63,9 +74,9 @@ Linux 真机 BLE 需要 BlueZ（及构建时的 `libdbus-1-dev` / `libudev-dev`�
 
 Release 产物：
 
-- `dglab-<target>.tar.gz` — 预编译二进制（linux x86_64/aarch64、macOS aarch64）
+- `dglab-<target>.tar.gz` — 预编译二进制（linux x86_64/aarch64、macOS aarch64、**Windows x86_64**）
 - `dglab-skill.tar.gz` — Codex skill
-- `install.sh` — 安装脚本副本
+- `install.sh` / `install.ps1` — 安装脚本
 - 对应 `.sha256`
 
 打 tag 发版：

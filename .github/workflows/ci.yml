@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -40,9 +40,12 @@ jobs:
         run: cargo clippy --locked --all-targets -- -D warnings
 
       - name: mock headless smoke
+        shell: bash
         run: |
           set -euo pipefail
           cargo build --locked --quiet
+          BIN=./target/debug/dglab
+          if [[ "${{ runner.os }}" == "Windows" ]]; then BIN="${BIN}.exe"; fi
           printf '%s\n' \
             scan \
             'connect AA:BB:CC:DD:EE:01' \
@@ -51,4 +54,4 @@ jobs:
             getBattery \
             zero \
             stop \
-            | ./target/debug/dglab --mock --headless
+            | "${BIN}" --mock --headless

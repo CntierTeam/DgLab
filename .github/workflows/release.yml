@@ -28,6 +28,8 @@ jobs:
           - os: macos-latest
             target: aarch64-apple-darwin
           # Note: Intel macOS runners are often unavailable; skip x86_64-apple-darwin.
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
     steps:
       - uses: actions/checkout@v4
 
@@ -60,7 +62,11 @@ jobs:
           cp "${BIN}" "dist/${STAGE}/"
           cp README.md LICENSE "dist/${STAGE}/"
           tar -C dist -czf "dist/${STAGE}.tar.gz" "${STAGE}"
-          (cd dist && sha256sum "${STAGE}.tar.gz" > "${STAGE}.tar.gz.sha256")
+          if command -v sha256sum >/dev/null 2>&1; then
+            (cd dist && sha256sum "${STAGE}.tar.gz" > "${STAGE}.tar.gz.sha256")
+          else
+            (cd dist && shasum -a 256 "${STAGE}.tar.gz" | awk '{print $1"  "$2}' > "${STAGE}.tar.gz.sha256")
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
@@ -122,6 +128,7 @@ jobs:
           mkdir -p release-assets
           find artifacts -type f \( -name '*.tar.gz' -o -name '*.sha256' \) -print -exec cp -v {} release-assets/ \;
           cp scripts/install.sh release-assets/install.sh
+          cp scripts/install.ps1 release-assets/install.ps1
           ls -la release-assets
 
       - name: Create GitHub Release
