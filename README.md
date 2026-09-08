@@ -61,7 +61,7 @@ Linux 真机 BLE 需要 BlueZ（及构建时的 `libdbus-1-dev` / `libudev-dev`�
 
 Release 产物：
 
-- `dglab-<target>.tar.gz` — 预编译二进制（linux/macOS x86_64 & aarch64）
+- `dglab-<target>.tar.gz` — 预编译二进制（linux x86_64/aarch64、macOS aarch64）
 - `dglab-skill.tar.gz` — Codex skill
 - `install.sh` — 安装脚本副本
 - 对应 `.sha256`
