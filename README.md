@@ -17,10 +17,6 @@ curl -fsSL https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/insta
 Windows（PowerShell）：
 
 ```powershell
-irm https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.ps1 | iex
-# 或指定版本 / 强制覆盖
-irm https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.ps1 | iex -Force
-# 更稳妥：
 iwr -useb https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.ps1 -OutFile install.ps1
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -Force
 ```
@@ -63,7 +59,7 @@ cargo build --release
 cargo run -- --mock
 ```
 
-Linux 真机 BLE 需要 BlueZ（及构建时的 `libdbus-1-dev` / `libudev-dev`）。
+Linux 真机 BLE 需要 BlueZ（及构建时的 `libdbus-1-dev` / `libudev-dev`）。Windows 真机依赖系统蓝牙栈（btleplug/WinRT）；无硬件时用 `--mock`。
 
 ## CI / Release
 
