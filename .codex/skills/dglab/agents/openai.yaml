@@ -1,6 +1,6 @@
 interface:
-  display_name: "DgLab Coyote"
-  short_description: "Use Coyote V2/V3 via dglab"
-  default_prompt: "Use $dglab to control or demo a Coyote (install, TUI, or --mock --headless scripts). 仅学习用."
+  display_name: "DgLab"
+  short_description: "How to use dglab CLI/TUI"
+  default_prompt: "Use $dglab to explain or run the DgLab CLI/TUI (keys, headless commands, emergency stop). Product usage only."
 policy:
   allow_implicit_invocation: true

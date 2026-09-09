@@ -6,7 +6,7 @@
 
 仓库：[CntierTeam/DgLab](https://github.com/CntierTeam/DgLab)
 
-本仓库同时提供 **Codex Skill**（`$dglab`），教 Codex **怎么用** `dglab`（安装、TUI、headless 脚本、急停），而不是怎么改源码。
+本仓库同时提供 **Codex Skill**（`$dglab`）：只教 **CLI/TUI 怎么用**（启动、按键、行协议、急停）。
 
 ## 一键安装（从 GitHub Release）
 
@@ -84,17 +84,17 @@ git push origin v0.1.0
 
 ## Codex Skill（仓库内）
 
-面向**使用** `dglab`（扫描/连接/强度/波形/急停/mock），不是开发手册。
+产品用法 skill：只含 CLI/TUI 操作说明。
 
 ```text
 .codex/skills/dglab/
 ├── SKILL.md
 ├── agents/openai.yaml
-└── references/protocol.md
+└── references/cli-tui.md
 ```
 
-- 随 Release 安装：`./scripts/install.sh --skill-only --force`
-- 本地 symlink：`./scripts/install-codex-skill.sh --force`
+- `./scripts/install.sh --skill-only --force`
+- `./scripts/install-codex-skill.sh --force`
 
 ## 功能
 
