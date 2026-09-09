@@ -6,7 +6,7 @@
 
 仓库：[CntierTeam/DgLab](https://github.com/CntierTeam/DgLab)
 
-本仓库同时提供 **Codex Skill**（`$dglab`）：只教 **CLI/TUI 怎么用**（启动、按键、行协议、急停）。
+本仓库同时提供 **Codex Skill**（`$dglab`）：**操作员模式**——代跑 CLI（`--headless` 扫连、强度、波形、急停），不是只拼命令。
 
 ## 一键安装（从 GitHub Release）
 
@@ -84,7 +84,7 @@ git push origin v0.1.0
 
 ## Codex Skill（仓库内）
 
-产品用法 skill：只含 CLI/TUI 操作说明。
+产品用法 skill：**代跑** CLI/TUI 操作（优先 `--headless` 执行，不是只贴教程）。
 
 ```text
 .codex/skills/dglab/

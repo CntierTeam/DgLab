@@ -1,6 +1,6 @@
 interface:
   display_name: "DgLab"
-  short_description: "How to use dglab CLI/TUI"
-  default_prompt: "Use $dglab to explain or run the DgLab CLI/TUI (keys, headless commands, emergency stop). Product usage only."
+  short_description: "代跑 dglab：强度/波形/急停"
+  default_prompt: "按 $dglab 当操作员：用户要扫设备、连接、调强度、发波形、读电量、急停时，用 shell 直接跑 dglab --headless（必要时 --mock），不要只拼命令或 SAMPLE。结束前 zero 再 stop；缺 MAC 先 scan。"
 policy:
   allow_implicit_invocation: true
