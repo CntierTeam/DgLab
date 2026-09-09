@@ -169,7 +169,7 @@ printf 'scan\nconnect AA:BB:CC:DD:EE:03\nsetStrength 10 0\ngetBattery\nemergency
 - V2 对齐 [DGLAB-BT](https://github.com/MossCG/DGLAB-BT) 写入路径；强度回读用正确的 11-bit unpack。
 - V3 对齐 [DG-LAB-OPENSOURCE](https://github.com/DG-LAB-OPENSOURCE/DG-LAB-OPENSOURCE/blob/main/coyote/v3/README.md)；B0 测试向量对照 dungeonctl（不依赖该 crate）。
 
-细节见 [.codex/skills/dglab/references/protocol.md](.codex/skills/dglab/references/protocol.md)。
+CLI/TUI 操作见 Codex skill 内 [references/cli-tui.md](.codex/skills/dglab/references/cli-tui.md)。
 
 ## 测试
 
