@@ -6,7 +6,7 @@
 
 仓库：[CntierTeam/DgLab](https://github.com/CntierTeam/DgLab)
 
-本仓库同时提供 **Codex Skill**（`$dglab`），把架构约束、协议要点和验证流程注入 Codex。
+本仓库同时提供 **Codex Skill**（`$dglab`），教 Codex **怎么用** `dglab`（安装、TUI、headless 脚本、急停），而不是怎么改源码。
 
 ## 一键安装（从 GitHub Release）
 
@@ -84,6 +84,8 @@ git push origin v0.1.0
 
 ## Codex Skill（仓库内）
 
+面向**使用** `dglab`（扫描/连接/强度/波形/急停/mock），不是开发手册。
+
 ```text
 .codex/skills/dglab/
 ├── SKILL.md
@@ -91,8 +93,8 @@ git push origin v0.1.0
 └── references/protocol.md
 ```
 
-- Release 安装：`./scripts/install.sh --skill-only`
-- 本地开发 symlink：`./scripts/install-codex-skill.sh --force`
+- 随 Release 安装：`./scripts/install.sh --skill-only --force`
+- 本地 symlink：`./scripts/install-codex-skill.sh --force`
 
 ## 功能
 

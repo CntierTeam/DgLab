@@ -1,109 +1,128 @@
 ---
 name: dglab
 description: >-
-  Develop and operate the DgLab Rust Coyote V2/V3 BLE controller (binary `dglab`:
-  ratatui TUI by default, `--headless` DGLAB-BT line protocol, `--mock` without hardware).
-  Covers protocol encode/decode, DeviceSession, V3 100ms B0 tick, TUI/headless wiring,
-  and verification. Trigger on: DgLab, dglab, Coyote, 郊狼, DGLAB-BT, btleplug Coyote,
-  sendWave, setStrength, B0/B1, mock headless.
+  Operate the DgLab Coyote V2/V3 controller (`dglab`): install, TUI, and
+  `--headless` line protocol compatible with DGLAB-BT. Use when the user wants
+  to scan/connect a Coyote, set strength, send waves, emergency-stop, run mock
+  demos, or script stdin/stdout control. Trigger on: DgLab, dglab, Coyote, 郊狼,
+  DGLAB-BT, setStrength, sendWave, --mock, --headless. Not for rewriting the
+  Rust codebase unless the user explicitly asks to develop it.
 license: MIT
 metadata:
-  short-description: Coyote V2/V3 BLE CLI/TUI guide
+  short-description: Use DgLab Coyote CLI/TUI
 ---
 
-# DgLab
+# DgLab（使用）
 
-Rust BLE controller for DG-LAB Coyote **V2 + V3**. Repo root is the Cargo package `dglab`.
+控制 DG-LAB 郊狼 **Coyote V2 / V3** 的命令行工具。二进制名：`dglab`。
 
-**仅学习用** — educational / research only; no warranty; users accept their own risk and must follow local law and device safety.
+**仅学习用** — 无担保；风险自负；遵守当地法律与设备安全；强度从低开始；随时可紧急置零。
 
-## Hard rules
+## 何时用这个 skill
 
-1. **Default argv → TUI**; **`--headless` → stdin/stdout line protocol**; **`--mock` → no adapter**.
-2. Protocol bytes live only in `src/protocol/{v2,v3}.rs`. Change packing → update hex unit tests in the same files.
-3. BLE I/O only through `DeviceSession` (`src/ble/`). UI/headless must not call `btleplug` directly.
-4. App truth is `AppState` + `Command`/`Event` in `src/app.rs`. Event names stay aligned with DGLAB-BT (`event updateBattery`, etc.).
-5. V3 **must** keep a **100ms B0 write loop** while connected; V2 writes on demand.
-6. Prefer boring code. Do not pull in `dungeonctl` or copy GPL DGLAB-BT sources.
+帮用户：**安装 / 启动 / 扫描连接 / 调强度发波形 / 写 headless 脚本 / 解释输出事件**。
 
-## Layout
+不要默认去改仓库源码。只有用户明确说要开发、修 bug、改协议实现时，才读代码。
 
-| Path | Role |
-|------|------|
-| `src/main.rs` | clap: `--headless` / `--mock`; TTY guard |
-| `src/app.rs` | `AppState`, `Command`, `Event` |
-| `src/core.rs` | command router + V3 tick orchestration |
-| `src/protocol/v2.rs` | V2 UUIDs + strength/wave encode/decode |
-| `src/protocol/v3.rs` | B0/B1/BF + freq compression |
-| `src/ble/session.rs` | `btleplug` session |
-| `src/ble/mock.rs` | in-memory devices for tests/demo |
-| `src/tui/` | ratatui UI |
-| `src/headless.rs` | DGLAB-BT-compatible line I/O |
-
-## Common workflows
-
-### Build / run
+## 安装
 
 ```bash
-cd "$(git rev-parse --show-toplevel)"
-cargo build --release
-cargo run -- --mock              # TUI + mock
-cargo run -- --mock --headless   # line protocol
-cargo run --release              # real BLE (BlueZ on Linux)
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.sh | bash
 ```
 
-### Verify (no hardware)
+```powershell
+# Windows PowerShell
+iwr -useb https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.ps1 -OutFile install.ps1
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Force
+```
+
+默认：
+
+- 二进制 → `~/.local/bin/dglab`（Windows：`dglab.exe`）
+- 本 skill → `~/.codex/skills/dglab`
+
+确保 `~/.local/bin` 在 `PATH` 中。仓库与 Release：https://github.com/CntierTeam/DgLab
+
+## 启动方式
+
+| 命令 | 含义 |
+|------|------|
+| `dglab` | 真机 BLE + **TUI**（需要交互终端） |
+| `dglab --mock` | 模拟设备 + TUI（无需蓝牙） |
+| `dglab --headless` | 真机 + **行协议**（stdin/stdout） |
+| `dglab --mock --headless` | 模拟 + 行协议（脚本/冒烟） |
+
+无 TTY 时不要开 TUI，程序会提示改用 `--headless`。
+
+Linux 真机需 BlueZ；Windows 走系统蓝牙；`--mock` 不需要适配器。
+
+## 推荐操作流
+
+1. 有硬件：`dglab` → `s` 扫描 → 选设备 → `c` 连接 → 小步调强度 → 需要时 `Space`/`0` 急停。
+2. 无硬件练习：`dglab --mock`，或 headless：
 
 ```bash
-cargo test
-cargo clippy --all-targets -- -D warnings
-cargo run -q -- --mock --headless <<'EOF'
+dglab --mock --headless <<'EOF'
 scan
 connect AA:BB:CC:DD:EE:01
+getBattery
 setStrength 5 3
 sendWave A 5 135 20
-getBattery
 zero
 stop
 EOF
 ```
 
-Mock addresses: `…:01` → V2, `…:03` → V3 (see `src/ble/mock.rs`).
+Mock 地址约定：`…:01` → V2，`…:03` → V3。
 
-### Protocol / feature work
+## TUI 按键
 
-1. Edit encode/decode in `protocol/v2.rs` or `v3.rs`.
-2. Lock behavior with hex tests (`hex-literal`).
-3. Wire `Command`/`Event` in `app.rs` + `core.rs` if the surface changes.
-4. Update TUI and/or `headless.rs` together so both stay in sync.
-5. Re-run `cargo test` and mock headless smoke.
+| 键 | 作用 |
+|----|------|
+| `q` | 退出 |
+| `Tab` | 切换焦点 |
+| `s` | 扫描 |
+| `c` | 连接选中设备 |
+| `g` | 读电量 |
+| `Space` / `0` | **紧急停止（置零）** |
+| `↑`/`↓` | 设备列表 |
+| `[` / `]` | A 强度 −/+ |
+| `-` / `=` | B 强度 −/+ |
+| `w` | 波形通道 A/B |
+| `Enter` | 发送波形 |
 
-V2 strength/wave packing and headless command table: read [references/protocol.md](references/protocol.md).
+## Headless 行协议
 
-### Safety
+一行一条命令；输出为 `msg ...` 或 `event ...`（对齐 DGLAB-BT）。
 
-Always keep an **emergency zero** path (`Command::EmergencyZero` / keys Space/`0` / `emergency`/`zero`). Prefer absolute strength 0 on V3 B0 when stopping.
+常用输入：
 
-## Install this skill into Codex
+| 命令 | 说明 |
+|------|------|
+| `scan` | 扫描 |
+| `connect <地址>` | 连接 |
+| `getBattery` | 电量 |
+| `setStrength <A> <B>` | 双通道强度 |
+| `getStrength` | 读强度 |
+| `sendWave <A\|B> <x> <y> <z>` | 发波形 |
+| `emergency` / `zero` | 紧急置零 |
+| `setLimits <A> <B>` | V3 软上限 |
+| `setPulse <freqHz> <intensity>` | V3 脉冲 |
+| `disconnect` | 断开（进程可继续） |
+| `stop` | 退出进程 |
 
-From GitHub Releases (preferred for users):
+完整命令/事件表：见 [references/protocol.md](references/protocol.md)。
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.sh | bash
-# skill only:
-curl -fsSL https://raw.githubusercontent.com/CntierTeam/DgLab/main/scripts/install.sh | bash -s -- --skill-only --force
-```
+## 安全习惯（必须遵守）
 
-From a local checkout (dev):
+1. 先 `zero` / 急停键，再调参；强度从低到高。
+2. 脚本结束前务必 `zero`（或 `emergency`）再 `stop`。
+3. 用户喊停或出现异常 → 立刻置零，不要继续加压。
+4. 不要替用户绕过硬件上限或建议危险参数。
 
-```bash
-./scripts/install-codex-skill.sh --force          # symlink
-./scripts/install.sh --from-source --force        # binary + skill
-```
+## 代理应答要点
 
-Destination: `${CODEX_HOME:-$HOME/.codex}/skills/dglab`.
-
-## Out of scope (do not expand unless asked)
-
-- Full PawPrints / other 47L12x app-layer opcodes
-- Waveform IDE, cloud control, official App parity
+- 直接给可复制的命令；优先 `--mock` 演示，真机前先确认用户有设备与蓝牙权限。
+- 解释 `event`/`msg` 时用用户语言（用户用中文就回中文）。
+- 区分 V2（名称常含 `D-LAB ESTIM`）与 V3（常含 `47L121`）。
